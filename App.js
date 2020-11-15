@@ -1,21 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+//Core
+import React, { useState } from 'react';
+import { AppLoading } from 'expo';
+import { loadAsync } from 'expo-font';
+//Components
+import Main from './src/Main';
+//Redux
+import { store } from './src/redux/store';
+import { Provider } from 'react-redux';
+
+const loadApplication = async () => {
+	await loadAsync({
+		ArchitectsDaughter: require('./assets/fonts/architects_daughter/ArchitectsDaughter-Regular.ttf'),
+	});
+};
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+	const [isReady, setIsReady] = useState(false);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+	if (!isReady) {
+		return (
+			<AppLoading
+				startAsync={loadApplication}
+				onFinish={() => setIsReady(true)}
+				onError={console.warn}
+			/>
+		);
+	}
+
+	return (
+		<Provider store={store}>
+			<Main />
+		</Provider>
+	);
+}
